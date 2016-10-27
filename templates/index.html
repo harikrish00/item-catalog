@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block page_content %}
+{% if catalogs %}
+  <ul>
+    {% for catalog in catalogs %}
+    <li>
+      <a href="/catalogs/{{ catalog.name }}/items">{{ catalog.name }}</a>
+      <a href='/catalogs/{{ catalog.name }}/edit'>edit</a> | <a href='/catalogs/{{ catalog.name }}/delete'>delete</a>
+    </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <h2> No catalogs here ! <a href='/catalogs/new'>Create One</a></h2>
+{% endif %}
+{% endblock %}
