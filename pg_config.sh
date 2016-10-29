@@ -13,6 +13,7 @@ pip install itsdangerous
 pip install flask-httpauth
 pip install flask-wtf
 pip install flask-bootstrap
+pip install flask-login
 su postgres -c 'createuser -dRS vagrant'
 su vagrant -c 'createdb'
 su vagrant -c 'createdb forum'

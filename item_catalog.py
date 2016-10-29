@@ -1,8 +1,8 @@
-from flask import Flask, url_for, render_template, request, flash, redirect
+from flask import Flask, url_for, render_template, request, flash, redirect, jsonify
 from flask_script import Manager
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from forms import CatalogForm, ItemForm
+from forms import CatalogForm, ItemForm, SignupForm, LoginForm
 from flask_bootstrap import __version__ as FLASK_BOOTSTRAP_VERSION
 from flask_bootstrap import Bootstrap
 from setup_database import Base, Item, Catalog, User
@@ -16,7 +16,6 @@ app.config['SECRET_KEY'] = 'super secret'
 manager = Manager(app)
 bootstrap = Bootstrap(app)
 
-
 # Connect to database and create a session
 engine = create_engine("sqlite:///itemcatalog.db")
 Base.metadata.bind = engine
@@ -27,20 +26,67 @@ def make_shell_context():
     return dict(app=app, engine=engine, session=session, User=User, Catalog=Catalog, Item=Item)
 manager.add_command("shell", Shell(make_context=make_shell_context))
 
+@app.route('/login', methods=['GET','POST'])
+def login():
+    form = LoginForm(request.form)
+    if request.method == 'POST' and form.validate():
+        flash('You are successfully signed in','success')
+        return redirect(url_for('index'))
+    return render_template('login.html', form=form)
+
+@app.route('/logout')
+def logout():
+    return "<h1>Logged out ...</h1>"
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    form = SignupForm(request.form)
+    if request.method == 'POST' and form.validate():
+        user = User(name=form.name.data, username=form.username.data,
+                    password=form.password.data,email=form.email.data)
+        session.add(user)
+        session.commit()
+        flash('Thanks for registering')
+        return redirect(url_for('index'))
+    return render_template('signup.html', form=form)
+
+@app.route('/catalogs/JSON')
+def catalogs_json():
+    catalogs = session.query(Catalog).all()
+    return jsonify(catalogs=[c.serialize for c in catalog])
+
+@app.route('/catalogs/<catalog_name>/JSON')
+def catalog_json(catalog_name):
+    try:
+        catalog = session.query(Catalog).filter_by(name=catalog_name).one()
+        return jsonify(catalog=catalog.serialize)
+    except:
+        return "Sorry no data found"
+
+@app.route('/catalogs/<catalog_name>/items/JSON')
+def catalog_items_json(catalog_name):
+    try:
+        catalog = session.query(Catalog).filter_by(name=catalog_name).one()
+        items = session.query(Item).filter_by(catalog_id=catalog.id).all()
+        return jsonify(catalog=[i.serialize for i in items])
+    except:
+        return "Sorry no data found"
+
+@app.route('/catalogs/<catalog_name>/items/<item_name>/JSON')
+def catalog_item_json(catalog_name, item_name):
+    try:
+        catalog = session.query(Catalog).filter_by(name=catalog_name).one()
+        item = session.query(Item).filter_by(catalog_id=catalog.id, name=item_name).one()
+        return jsonify(catalog=item.serialize)
+    except:
+        return "Sorry no data found"
+
 # Home page or Catalog Index Page
 @app.route('/')
 @app.route('/catalogs')
 def index():
     catalogs = session.query(Catalog).all()
     return render_template("index.html",catalogs=catalogs)
-
-@app.route('/login')
-def login():
-    return "<h1>login or register</h1>"
-
-@app.route('/logout')
-def logout():
-    return "<h1>Logged out ...</h1>"
 
 # Create new catalog
 @app.route('/catalogs/new', methods = ['GET','POST'])
@@ -70,7 +116,6 @@ def edit_catalog(catalog_name):
         return redirect(url_for('index'))
     else:
         return render_template('edit_catalog.html',form=form, catalog=catalog)
-
 
 @app.route('/catalogs/<catalog_name>/delete', methods = ['GET','POST'])
 def delete_catalog(catalog_name):
@@ -106,7 +151,6 @@ def new_catalog_item(catalog_name):
         return redirect(url_for('catalog_items',catalog_name=catalog_name))
     return render_template('new_item.html',form=form)
 
-
 @app.route('/catalogs/<catalog_name>/items/<item_name>/edit', methods = ['GET','POST'])
 def edit_catalog_item(catalog_name, item_name):
     catalog = session.query(Catalog).filter_by(name=catalog_name).one()
@@ -121,7 +165,6 @@ def edit_catalog_item(catalog_name, item_name):
         return redirect(url_for('catalog_items',catalog_name=catalog_name))
     return render_template('new_item.html',form=form, catalog=catalog, item=item)
 
-
 @app.route('/catalogs/<catalog_name>/items/<item_name>/delete', methods = ['GET','POST'])
 def delete_catalog_item(catalog_name, item_name):
     catalog = session.query(Catalog).filter_by(name=catalog_name).one()
@@ -132,7 +175,6 @@ def delete_catalog_item(catalog_name, item_name):
         flash('Item has been successfully deleted !','success')
         return redirect(url_for('catalog_items',catalog_name=catalog_name))
     return render_template('delete_item.html',catalog=catalog, item=item)
-
 
 if __name__ == '__main__':
     manager.run()

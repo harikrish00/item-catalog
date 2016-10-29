@@ -2,6 +2,7 @@ from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
+from werkzeug.security import generate_password_hash, check_password_hash
 
 Base = declarative_base()
 
@@ -11,9 +12,21 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(80), nullable=False)
+    username = Column(String(80),nullable=False, unique=True)
+    password_hash = Column(String(80),nullable=False)
     picture = Column(String(80))
     email = Column(String(100), nullable=False)
 
+    @property
+    def password(self):
+        raise AttributeError('password is not a readable attribute')
+
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def verify_password(self,password):
+        return check_password_hash(self.password_hash, password)
 
 class Catalog(Base):
 
