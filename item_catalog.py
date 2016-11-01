@@ -7,7 +7,7 @@ from flask_bootstrap import __version__ as FLASK_BOOTSTRAP_VERSION
 from flask_bootstrap import Bootstrap
 from setup_database import Base, Item, Catalog, User
 from flask.ext.script import Shell
-
+from flask.ext.login import LoginManager, login_user, logout_user, current_user, login_required
 
 # Application initialization
 app = Flask(__name__)
@@ -15,6 +15,16 @@ app.debug = True
 app.config['SECRET_KEY'] = 'super secret'
 manager = Manager(app)
 bootstrap = Bootstrap(app)
+
+# login manager and sessions
+login_manager = LoginManager()
+login_manager.session_protection = 'strong'
+login_manager.login_view = 'auth.login'
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return session.query(User).filter_by(id=user_id).one()
 
 # Connect to database and create a session
 engine = create_engine("sqlite:///itemcatalog.db")
@@ -30,13 +40,18 @@ manager.add_command("shell", Shell(make_context=make_shell_context))
 def login():
     form = LoginForm(request.form)
     if request.method == 'POST' and form.validate():
-        flash('You are successfully signed in','success')
-        return redirect(url_for('index'))
+        username = form.username.data
+        user = session.query(User).filter_by(username=username).one()
+        if user is not None and user.verify_password(form.password.data):
+            login_user(user)
+            flash('You are successfully signed in','success')
+            return redirect(url_for('index'))
     return render_template('login.html', form=form)
 
 @app.route('/logout')
 def logout():
-    return "<h1>Logged out ...</h1>"
+    logout_user()
+    return redirect(url_for('index'))
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -90,14 +105,17 @@ def index():
 
 # Create new catalog
 @app.route('/catalogs/new', methods = ['GET','POST'])
+@login_required
 def new_catalog():
     form = CatalogForm()
     if request.method == 'POST':
         name = request.form['name']
-        catalog = Catalog(name=name)
+        user_id = current_user.id
+        print "--->",user_id
+        catalog = Catalog(name=name, user_id=user_id)
         session.add(catalog)
         session.commit()
-        flash('New catalog has been added')
+        flash('New catalog has been added !','success')
         return redirect(url_for('index'))
     else:
         return render_template('new_catalog.html', form=form)
