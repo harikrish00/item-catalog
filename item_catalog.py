@@ -1,4 +1,5 @@
 from flask import Flask, url_for, render_template, request, flash, redirect, jsonify
+from flask import session as login_session, g
 from flask_script import Manager
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -7,7 +8,8 @@ from flask_bootstrap import __version__ as FLASK_BOOTSTRAP_VERSION
 from flask_bootstrap import Bootstrap
 from setup_database import Base, Item, Catalog, User
 from flask.ext.script import Shell
-from flask.ext.login import LoginManager, login_user, logout_user, current_user, login_required
+# from flask.ext.login import LoginManager, login_user, logout_user, current_user, login_required
+from login_helper import login_required
 
 # Application initialization
 app = Flask(__name__)
@@ -17,14 +19,14 @@ manager = Manager(app)
 bootstrap = Bootstrap(app)
 
 # login manager and sessions
-login_manager = LoginManager()
-login_manager.session_protection = 'strong'
-login_manager.login_view = 'auth.login'
-login_manager.init_app(app)
-
-@login_manager.user_loader
-def load_user(user_id):
-    return session.query(User).filter_by(id=user_id).one()
+# login_manager = LoginManager()
+# login_manager.session_protection = 'strong'
+# login_manager.login_view = 'login'
+# login_manager.init_app(app)
+#
+# @login_manager.user_loader
+# def load_user(user_id):
+#     return session.query(User).filter_by(id=user_id).one()
 
 # Connect to database and create a session
 engine = create_engine("sqlite:///itemcatalog.db")
@@ -36,6 +38,14 @@ def make_shell_context():
     return dict(app=app, engine=engine, session=session, User=User, Catalog=Catalog, Item=Item)
 manager.add_command("shell", Shell(make_context=make_shell_context))
 
+@app.before_request
+def load_user():
+    if 'username' in login_session:
+        user = session.query(User).filter_by(username=login_session["username"]).first()
+    else:
+        user = None  # Make it better, use an anonymous User instead
+    g.user = user
+
 @app.route('/login', methods=['GET','POST'])
 def login():
     form = LoginForm(request.form)
@@ -43,14 +53,18 @@ def login():
         username = form.username.data
         user = session.query(User).filter_by(username=username).one()
         if user is not None and user.verify_password(form.password.data):
-            login_user(user)
+            login_session['username'] = username
             flash('You are successfully signed in','success')
             return redirect(url_for('index'))
+        else:
+            flash('You are username or password is incorrect!')
+            return redirect(url_for('login'))
     return render_template('login.html', form=form)
 
 @app.route('/logout')
 def logout():
-    logout_user()
+    del login_session['username']
+    flash('You are successfully logged out','success')
     return redirect(url_for('index'))
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -111,7 +125,6 @@ def new_catalog():
     if request.method == 'POST':
         name = request.form['name']
         user_id = current_user.id
-        print "--->",user_id
         catalog = Catalog(name=name, user_id=user_id)
         session.add(catalog)
         session.commit()
