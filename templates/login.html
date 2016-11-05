@@ -3,7 +3,7 @@
 {% block page_content %}
 <div class="row">
   <div class="col-md-6 signin-form">
-    {{ wtf.quick_form(form)}}
+    {{ wtf.quick_form(form)}} | <span><a href="{{url_for('signup')}}">Signup</a></span>
   </div>
   <div class="col-md-4 col-md-offset-2 ext-signin">
     <!--BEGIN GOOGLE SIGN IN -->

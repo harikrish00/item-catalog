@@ -1,18 +1,31 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 {% block page_content %}
+<div class="container">
+  <h1>Welcome to {{ catalog.name }} catalog !</h1>
 
-<h1>Welcome to {{ catalog.name }} catalog !</h1>
-<a href='/catalogs/{{ catalog.name }}/items/new'>Create New Item</a>
-{% if items %}
-  <ul>
-    {% for item in items %}
-      <li>{{ item.name }}</li>
-      <a href='/catalogs/{{ catalog.name }}/items/{{item.name}}/edit'>edit</a> |
-      <a href='/catalogs/{{ catalog.name }}/items/{{item.name}}/delete'>delete</a>
-    {% endfor %}
-  </ul>
-{% else %}
-  <h3>No items in the catalogs, please create by clicking the above button !</h3>
-{% endif %}
+  {% if items %}
+  <section class="row">
+    <div class="col-md-6">
+      <div id="accordion">
+          {% for item in items %}
+            <h3>{{ item.name }}</h3>
+            <div>
+              <h3 style="display: inline;">{{ item.name }}</h3>
+              <span class="item-price">{{ item.price }}</span>
+              <br />
+              <br />
+              <p>
+                {{item.description}}
+              </p>
+            </div>
+            <!-- <a href='/catalogs/{{ catalog.name }}/items/{{item.name}}/edit'>edit</a> |
+            <a href='/catalogs/{{ catalog.name }}/items/{{item.name}}/delete'>delete</a> -->
+          {% endfor %}
+      {% else %}
+        No items here <a href='/catalogs/{{ catalog.name }}/items/new'>create</a> one !
+      {% endif %}
+      </div>
+    </div>
+  </section>
 {% endblock %}
