@@ -4,15 +4,28 @@
 {% block head %}
   {{super()}}
   {{fixes.ie8()}}
+  {% block styles -%}
+  {{super()}}
+  <link rel="stylesheet" type="text/css"
+  href="{{url_for('static', filename='style.css')}}">
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,100" rel="stylesheet">  
+  {% endblock %}
   {% block scripts -%}
     {{super()}}
     <script type="text/javascript" src="{{url_for('static', filename='jquery-3.1.0.js') }}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='item-catalog.js') }}"></script>
     <script   src="https://code.jquery.com/jquery-3.1.0.min.js"   integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script>
     <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   {% endblock %}
 {%- endblock %}
 {% block navbar %}
-<div class="navbar navbar-inverse" role="navigation">
+<div class="container">
+<div>
+    <img src="{{url_for('static', filename='CatalogExpress.jpg') }}" alt="top banner"  class="img-responsive"/>
+</div>
+<div class="navbar navbar-default" role="navigation">
   <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle"
@@ -27,21 +40,30 @@
   <div class="navbar-collapse collapse">
     <ul class="nav navbar-nav">
       <li><a href="/">Home</a></li>
+      {% if 'user_id' in session %}
+      <p class="navbar-text greetings"> Greetings {{ session['name'] }} |
+        <a href="{{url_for('logout')}}">Logout </a>
+      </p>
+      {% else %}
+      <li><a href="/login">Login <span class="sr-only">(current)</span></a></li>
+      {% endif %}
     </ul>
   </div>
 </div>
 </div>
-<div>
-  {% if session['user_id'] %}
-    <a href="/logout">Logout</a>
-  {% else %}
-    <a href="/login">Login</a>
-  {% endif %}
-</div>
+</div> <!--Top Container -->
 {% endblock %}
 {% block content %}
 <div class="container">
 {% include "flash.html" %}
-{% block page_content %}{% endblock %}
+  <!-- <div>
+    {% if session['user_id'] %}
+      <a href="/logout">Logout</a>
+    {% else %}
+      <a href="/login">Login</a>
+    {% endif %}
+  </div> -->
+  {% block page_content %}
+  {% endblock %}
 </div>
 {% endblock %}

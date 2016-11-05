@@ -1,0 +1,52 @@
+body {
+  font-family: Lato, sans-serif;
+}
+
+.navbar-default {
+  background-color: #44a8ff;
+}
+
+.navbar-default .navbar-brand{
+  color: white;
+}
+
+.navbar-default .navbar-nav > li > a{
+  color: white;
+}
+
+.ui-menu .ui-menu-item-wrapper {
+  font-family: Lato, sans-serif;
+}
+
+.navbar-text.greetings {
+    font-family: Lato, sans-serif;
+    color: #FFEB3B;
+}
+
+.ext-signin {
+  margin-left: 30px;
+  margin-top: 30px;
+}
+
+.signin-form {
+  margin-left: 30px;
+}
+
+.v-divider {
+  position: absolute;
+  height: 300px;
+  width: 5px;
+  left: 30%;
+  border-left: 1px solid black;
+}
+
+@media screen and (max-width: 767px) {
+    .v-divider {
+      border: 0;
+    }
+}
+
+
+.ui-widget.ui-widget-content {
+  border: 0 !important;
+}
