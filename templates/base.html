@@ -1,6 +1,16 @@
 {% extends "bootstrap/base.html" %}
 {% block title %}Flasky{% endblock %}
-
+{% import "bootstrap/fixes.html" as fixes %}
+{% block head %}
+  {{super()}}
+  {{fixes.ie8()}}
+  {% block scripts -%}
+    {{super()}}
+    <script type="text/javascript" src="{{url_for('static', filename='jquery-3.1.0.js') }}"></script>
+    <script   src="https://code.jquery.com/jquery-3.1.0.min.js"   integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+  {% endblock %}
+{%- endblock %}
 {% block navbar %}
 <div class="navbar navbar-inverse" role="navigation">
   <div class="container">
@@ -21,9 +31,17 @@
   </div>
 </div>
 </div>
+<div>
+  {% if session['user_id'] %}
+    <a href="/logout">Logout</a>
+  {% else %}
+    <a href="/login">Login</a>
+  {% endif %}
+</div>
 {% endblock %}
 {% block content %}
 <div class="container">
+{% include "flash.html" %}
 {% block page_content %}{% endblock %}
 </div>
 {% endblock %}
