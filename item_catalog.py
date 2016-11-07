@@ -340,7 +340,8 @@ def catalog_item_json(catalog_name, item_name):
 @app.route('/catalogs')
 def index():
     catalogs = session.query(Catalog).all()
-    return render_template("index.html",catalogs=catalogs)
+    items = get_recent_items()
+    return render_template("index.html",catalogs=catalogs, items=items)
 
 # Create new catalog
 @app.route('/catalogs/new', methods = ['GET','POST'])
@@ -417,7 +418,7 @@ def new_catalog_item(catalog_name):
         session.add(item)
         session.commit()
         return redirect(url_for('catalog_items',catalog_name=catalog_name))
-    return render_template('new_item.html',form=form)
+    return render_template('new_item.html',form=form, catalog=catalog)
 
 @app.route('/catalogs/<catalog_name>/items/<item_name>/edit', methods = ['GET','POST'])
 @login_required
@@ -477,6 +478,10 @@ def get_user_id(email):
         return user.id
     except:
         return None
+
+def get_recent_items():
+    return [ item for item in session.query(Item).all()]
+
 
 if __name__ == '__main__':
     manager.run()

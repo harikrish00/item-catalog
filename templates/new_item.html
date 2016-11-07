@@ -1,7 +1,21 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 {% block page_content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+          <form class="form" method="post" role="form">
+            {{ form.hidden_tag() }}
+            {{ wtf.form_errors(form, hiddens="only") }}
 
-  {{ wtf.quick_form(form)}}
-
+            {{ wtf.form_field(form.name) }}
+            {{ wtf.form_field(form.description) }}
+            {{ wtf.form_field(form.price) }}
+             <input class="btn btn-primary" id="submit" name="submit" type="submit" value="Submit">
+            |
+            <a href="/catalogs/{{ catalog.name }}/items">Cancel</a>
+          </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

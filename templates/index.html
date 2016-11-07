@@ -8,9 +8,9 @@
     <h2>Catalogs</h2>
     <ul id="catalogs">
     {% for catalog in catalogs %}
-      <li><div>
-        <a href="/catalogs/{{ catalog.name }}/items">{{ catalog.name }}</a>
-      </div></li>
+      <li>
+      <a href="/catalogs/{{ catalog.name }}/items">{{ catalog.name }}</a>
+      </li>
     {% endfor %}
     </ul>
   </div>
@@ -18,7 +18,9 @@
   <div class="col-sm-4">
     <h2>Recent</h2>
     <ul id="recent_items">
-      <li><div>Toys</div></li>
+      {% for item in items %}
+        <li><div>{{item.name}}({{item.catalog.name}})</div></li>
+      {% endfor %}
     </ul>
   </div>
 </div>

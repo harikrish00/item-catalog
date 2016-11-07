@@ -19,13 +19,16 @@
                 {{item.description}}
               </p>
             </div>
+              <div class="col-md-6">
+                <a href="/catalogs/{{ catalog.name }}/items/new" class="btn btn-md btn-primary">Create New Item</a>
+              </div>
             <!-- <a href='/catalogs/{{ catalog.name }}/items/{{item.name}}/edit'>edit</a> |
             <a href='/catalogs/{{ catalog.name }}/items/{{item.name}}/delete'>delete</a> -->
           {% endfor %}
+      </div>
       {% else %}
         No items here <a href='/catalogs/{{ catalog.name }}/items/new'>create</a> one !
       {% endif %}
       </div>
-    </div>
   </section>
 {% endblock %}
