@@ -72,3 +72,12 @@ body {
 .ui-widget.ui-widget-content {
   border: 0 !important;
 }
+
+.ui-menu .ui-menu-item-wrapper{
+  color: #FF9800;
+  font-weight: bold;
+}
+
+.catalog_recent_items {
+  color: gray !important;
+}

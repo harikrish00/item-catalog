@@ -3,7 +3,9 @@
 {% block page_content %}
 <div class="container">
   <h1>Welcome to {{ catalog.name }} catalog !</h1>
-
+<a href="/catalogs/{{ catalog.name }}/items/new" class="btn btn-xs btn-default">Create New Item</a> |
+<a href="/catalogs/{{ catalog.name }}/edit" class="btn btn-xs btn-default">Edit Catalog</a> |
+<a href="/catalogs/{{ catalog.name }}/delete" class="btn btn-xs btn-danger">Delete Catalog</a><br /><br />
   {% if items %}
   <section class="row">
     <div class="col-md-6">
@@ -19,16 +21,14 @@
                 {{item.description}}
               </p>
             </div>
-              <div class="col-md-6">
-                <a href="/catalogs/{{ catalog.name }}/items/new" class="btn btn-md btn-primary">Create New Item</a>
-              </div>
             <!-- <a href='/catalogs/{{ catalog.name }}/items/{{item.name}}/edit'>edit</a> |
             <a href='/catalogs/{{ catalog.name }}/items/{{item.name}}/delete'>delete</a> -->
           {% endfor %}
       </div>
-      {% else %}
-        No items here <a href='/catalogs/{{ catalog.name }}/items/new'>create</a> one !
-      {% endif %}
-      </div>
+    </div>
+    {% else %}
+      No items here <a href='/catalogs/{{ catalog.name }}/items/new'>create</a> one !
+    {% endif %}
+
   </section>
 {% endblock %}

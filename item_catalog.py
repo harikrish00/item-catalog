@@ -480,8 +480,7 @@ def get_user_id(email):
         return None
 
 def get_recent_items():
-    return [ item for item in session.query(Item).all()]
-
+    return [ item for item in session.query(Item).order_by('timestamp desc').all()]
 
 if __name__ == '__main__':
     manager.run()

@@ -1,9 +1,10 @@
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask.ext.login import UserMixin
+from datetime import datetime
 
 Base = declarative_base()
 
@@ -37,6 +38,7 @@ class Catalog(Base):
     name = Column(String(80), unique=True)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
+    timestamp = Column(DateTime, default=datetime.utcnow())
 
     @property
     def serialize(self):
@@ -58,6 +60,7 @@ class Item(Base):
     catalog = relationship(Catalog)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
+    timestamp = Column(DateTime, default=datetime.utcnow())
 
     @property
     def serialize(self):
