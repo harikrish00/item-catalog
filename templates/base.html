@@ -41,6 +41,9 @@
     <ul class="nav navbar-nav">
       <li><a href="/">Home</a></li>
       {% if 'user_id' in session %}
+      <li>
+        <a href="/catalogs/new">New Catalog</a>
+      </li>
       <p class="navbar-text greetings"> Greetings {{ session['name'] }} |
         <a href="{{url_for('logout')}}">Logout </a>
       </p>

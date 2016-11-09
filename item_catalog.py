@@ -15,7 +15,6 @@ import httplib2
 import json
 from flask import make_response
 import requests
-# from flask.ext.login import LoginManager, login_user, logout_user, current_user, login_required
 from login_helper import login_required
 
 CLIENT_ID = json.loads(
@@ -28,16 +27,6 @@ app.debug = True
 app.config['SECRET_KEY'] = 'super secret'
 manager = Manager(app)
 bootstrap = Bootstrap(app)
-
-# login manager and sessions
-# login_manager = LoginManager()
-# login_manager.session_protection = 'strong'
-# login_manager.login_view = 'login'
-# login_manager.init_app(app)
-#
-# @login_manager.user_loader
-# def load_user(user_id):
-#     return session.query(User).filter_by(id=user_id).one()
 
 # Connect to database and create a session
 engine = create_engine("sqlite:///itemcatalog.db")
@@ -307,7 +296,7 @@ def signup():
 @app.route('/catalogs/JSON')
 def catalogs_json():
     catalogs = session.query(Catalog).all()
-    return jsonify(catalogs=[c.serialize for c in catalog])
+    return jsonify(catalogs=[c.serialize for c in catalogs])
 
 @app.route('/catalogs/<catalog_name>/JSON')
 def catalog_json(catalog_name):

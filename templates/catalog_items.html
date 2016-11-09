@@ -20,9 +20,11 @@
               <p>
                 {{item.description}}
               </p>
+              <div class="mod_items">
+                <a href='/catalogs/{{ catalog.name }}/items/{{item.name}}/edit'>edit</a> |
+                <a href='/catalogs/{{ catalog.name }}/items/{{item.name}}/delete'>delete</a>
+              </div>
             </div>
-            <!-- <a href='/catalogs/{{ catalog.name }}/items/{{item.name}}/edit'>edit</a> |
-            <a href='/catalogs/{{ catalog.name }}/items/{{item.name}}/delete'>delete</a> -->
           {% endfor %}
       </div>
     </div>

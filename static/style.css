@@ -81,3 +81,12 @@ body {
 .catalog_recent_items {
   color: gray !important;
 }
+
+.mod_items>a {
+  color: #2196f3 !important;
+  font-weight: bolder;
+}
+
+.mod_items {
+    float: right;
+}
