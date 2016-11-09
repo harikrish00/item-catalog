@@ -22,7 +22,8 @@
     <ul id="recent_items">
       {% for item in items %}
         <li>
-          <a href="catalogs/{{ item.catalog.name }}/items" class="catalog_list">{{item.name}} ( <span class="catalog_recent_items">
+          <a href="catalogs/{{ item.catalog.name }}/items"
+          class="catalog_list">{{item.name}} ( <span class="catalog_recent_items">
           {{item.catalog.name}}</span> )</a>
         </li>
       {% endfor %}

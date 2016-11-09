@@ -59,13 +59,6 @@
 {% block content %}
 <div class="container">
 {% include "flash.html" %}
-  <!-- <div>
-    {% if session['user_id'] %}
-      <a href="/logout">Logout</a>
-    {% else %}
-      <a href="/login">Login</a>
-    {% endif %}
-  </div> -->
   {% block page_content %}
   {% endblock %}
 </div>

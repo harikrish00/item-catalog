@@ -35,7 +35,8 @@ DBSession = sessionmaker(bind = engine)
 session = DBSession()
 
 def make_shell_context():
-    return dict(app=app, engine=engine, session=session, User=User, Catalog=Catalog, Item=Item)
+    return dict(app=app, engine=engine, session=session, User=User,
+                Catalog=Catalog, Item=Item)
 manager.add_command("shell", Shell(make_context=make_shell_context))
 
 @app.before_request
@@ -194,8 +195,8 @@ def fbconnect():
         'web']['app_id']
     app_secret = json.loads(
         open('fb_client_secrets.json', 'r').read())['web']['app_secret']
-    url = 'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s' % (
-        app_id, app_secret, access_token)
+    url = 'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s'
+    % (app_id, app_secret, access_token)
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
 
@@ -403,20 +404,23 @@ def new_catalog_item(catalog_name):
         name = request.form['name']
         description = request.form['description']
         price = request.form['price']
-        item = Item(name=name, description=description, price=price, catalog_id=catalog.id)
+        item = Item(name=name, description=description,
+                    price=price, catalog_id=catalog.id)
         session.add(item)
         session.commit()
         return redirect(url_for('catalog_items',catalog_name=catalog_name))
     return render_template('new_item.html',form=form, catalog=catalog)
 
-@app.route('/catalogs/<catalog_name>/items/<item_name>/edit', methods = ['GET','POST'])
+@app.route('/catalogs/<catalog_name>/items/<item_name>/edit',
+            methods = ['GET','POST'])
 @login_required
 def edit_catalog_item(catalog_name, item_name):
     catalog = session.query(Catalog).filter_by(name=catalog_name).one()
     message = is_catalog_author(catalog)
     if message:
         return message
-    item = session.query(Item).filter_by(catalog_id=catalog.id, name=item_name).one()
+    item = session.query(Item).filter_by(catalog_id=catalog.id,
+                                            name=item_name).one()
     form = ItemForm(obj=item)
     if form.validate_on_submit():
         item.name = request.form['name']
@@ -427,7 +431,8 @@ def edit_catalog_item(catalog_name, item_name):
         return redirect(url_for('catalog_items',catalog_name=catalog_name))
     return render_template('new_item.html',form=form, catalog=catalog, item=item)
 
-@app.route('/catalogs/<catalog_name>/items/<item_name>/delete', methods = ['GET','POST'])
+@app.route('/catalogs/<catalog_name>/items/<item_name>/delete',
+            methods = ['GET','POST'])
 @login_required
 def delete_catalog_item(catalog_name, item_name):
     catalog = session.query(Catalog).filter_by(name=catalog_name).one()
@@ -451,7 +456,10 @@ def is_catalog_author(catalog):
 
 def create_user(login_session):
     # Create user in the database when they login
-    newUser = User(name=login_session['username'],username=login_session['username'], email=login_session['email'], picture=login_session['picture'])
+    newUser = User(name=login_session['username'],
+                username=login_session['username'],
+                email=login_session['email'],
+                picture=login_session['picture'])
     session.add(newUser)
     session.commit()
     user = session.query(User).filter_by(email = login_session['email']).one()
