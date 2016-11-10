@@ -1,7 +1,7 @@
 from flask import Flask, url_for, render_template, request, flash, redirect, jsonify
 from flask import session as login_session, g
 from flask_script import Manager
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, exists
 from sqlalchemy.orm import sessionmaker
 from forms import CatalogForm, ItemForm, SignupForm, LoginForm
 from flask_bootstrap import __version__ as FLASK_BOOTSTRAP_VERSION
@@ -29,7 +29,8 @@ manager = Manager(app)
 bootstrap = Bootstrap(app)
 
 # Connect to database and create a session
-engine = create_engine("sqlite:///itemcatalog.db")
+# engine = create_engine("sqlite:///itemcatalog.db")
+engine = create_engine("postgresql://catalogex:Welcome@localhost:5432/itemcatalog")
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind = engine)
 session = DBSession()
@@ -195,8 +196,7 @@ def fbconnect():
         'web']['app_id']
     app_secret = json.loads(
         open('fb_client_secrets.json', 'r').read())['web']['app_secret']
-    url = 'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s'
-    % (app_id, app_secret, access_token)
+    url = "https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s" % (app_id, app_secret, access_token)
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
 
@@ -340,6 +340,10 @@ def new_catalog():
     form = CatalogForm()
     if request.method == 'POST':
         name = request.form['name']
+        # Prevent duplicate catalogs being created
+        if session.query(exists().where(Catalog.name==name)).scalar():
+            flash("Catalog already exists","danger")
+            return render_template('new_catalog.html', form=form)
         user_id = login_session['user_id']
         catalog = Catalog(name=name, user_id=user_id)
         session.add(catalog)
@@ -402,6 +406,9 @@ def new_catalog_item(catalog_name):
         return message
     if form.validate_on_submit():
         name = request.form['name']
+        if session.query(Item).filter(Item.name==name,Item.catalog_id==catalog.id).count():
+            flash("Item already exists!","danger")
+            return render_template('new_item.html',form=form, catalog=catalog)
         description = request.form['description']
         price = request.form['price']
         item = Item(name=name, description=description,

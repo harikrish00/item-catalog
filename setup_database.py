@@ -73,6 +73,7 @@ class Item(Base):
             'price': self.price,
         }
 
-engine = create_engine('sqlite:///itemcatalog.db')
+    # engine = create_engine('sqlite:///itemcatalog.db')
+engine = create_engine("postgresql://catalogex:Welcome@localhost:5432/itemcatalog")
 
 Base.metadata.create_all(engine)
