@@ -1,5 +1,6 @@
 from flask import Flask, url_for, render_template, request, flash, redirect, jsonify
 from flask import session as login_session, g
+import os
 from flask_script import Manager
 from sqlalchemy import create_engine, exists
 from sqlalchemy.orm import sessionmaker
@@ -30,7 +31,9 @@ bootstrap = Bootstrap(app)
 
 # Connect to database and create a session
 # engine = create_engine("sqlite:///itemcatalog.db")
-engine = create_engine("postgresql://catalogex:Welcome@localhost:5432/itemcatalog")
+database_url = os.environ.get('DATABASE_URL') or 'sqlite:///itemcatalog.db'
+engine = create_engine(database_url)
+# engine = create_engine("postgresql://catalogex:Welcome@localhost:5432/itemcatalog")
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind = engine)
 session = DBSession()
