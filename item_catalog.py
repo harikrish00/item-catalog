@@ -30,10 +30,8 @@ manager = Manager(app)
 bootstrap = Bootstrap(app)
 
 # Connect to database and create a session
-# engine = create_engine("sqlite:///itemcatalog.db")
 database_url = os.environ.get('DATABASE_URL') or 'sqlite:///itemcatalog.db'
 engine = create_engine(database_url)
-# engine = create_engine("postgresql://catalogex:Welcome@localhost:5432/itemcatalog")
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind = engine)
 session = DBSession()
@@ -43,12 +41,13 @@ def make_shell_context():
                 Catalog=Catalog, Item=Item)
 manager.add_command("shell", Shell(make_context=make_shell_context))
 
+# before any request is made, load users in global context
 @app.before_request
 def load_user():
     if 'user_id' in login_session:
         user = session.query(User).filter_by(id=login_session["user_id"]).first()
     else:
-        user = None  # Make it better, use an anonymous User instead
+        user = None
     g.user = user
 
 @app.route('/login', methods=['GET','POST'])

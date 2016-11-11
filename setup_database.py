@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy import create_engine
 from werkzeug.security import generate_password_hash, check_password_hash
-# from flask.ext.login import UserMixin
+    # from flask.ext.login import UserMixin
 from datetime import datetime
 import os
 
@@ -74,9 +74,7 @@ class Item(Base):
             'price': self.price,
         }
 
-# engine = create_engine('sqlite:///itemcatalog.db')
 database_url = os.environ.get('DATABASE_URL') or 'sqlite:///itemcatalog.db'
 engine = create_engine(database_url)
-# engine = create_engine("postgresql://catalogex:Welcome@localhost:5432/itemcatalog")
 
 Base.metadata.create_all(engine)
